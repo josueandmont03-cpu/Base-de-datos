@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Consultar Constancia de Posesión - Municipalidad de Lurigancho</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+  .search-card { border: 1px solid #d1d5db; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .data-grid-item { border-bottom: 1px solid #e5e7eb; min-height: 48px; }
+  .result-value { color: #2d5a52; font-weight: 600; }
+  #error-msg { display: none; }
+  #loading { display: none; }
+</style>
+</head>
+<body class="bg-white min-h-screen py-12">
+
+<main class="max-w-6xl mx-auto px-4 md:px-0">
+
+  <!-- Tarjeta de búsqueda -->
+  <section class="search-card mb-12 overflow-hidden bg-white">
+    <header class="p-8 flex items-center">
+      <img alt="Logo Municipalidad Distrital de Lurigancho" class="h-20 object-contain"
+           src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKH-jPJxkROEAKKx3XsSGdWU62zzpd3Mw0O_SG2ceZMbI2_GxdPNDvFscrnobJR9D_1KpPrC6ffDCgdo7X3FY9i5V1nh9GKGXF5FwvbaFbJvVOWFHsiG58RE_GBb9K3DUo2prSVijIXItMYdlr99VnQf5tMgMXt9VqDTSsrUI9xfGLuSYWJqpR4cjEKpKXewrHa6tcZtxhWI5zedyYIjYzkwCpZFODCAg_yuBK9b0J8h8vI9DXeDWaMZV2706vkUtNlgzFdTLpurI"/>
+    </header>
+    <div style="background-color:#2d5a52;" class="py-5 px-10">
+      <h1 class="text-white text-2xl font-bold tracking-tight">Consultar Constancia de Posesión</h1>
+    </div>
+    <div class="p-10">
+      <div class="max-w-4xl">
+        <label class="block font-bold text-lg mb-4" style="color:#2d5a52;" for="constancia_num">Número de Constancia</label>
+        <input id="constancia_num" type="text" placeholder="Ingrese el número de constancia"
+               class="w-full p-3.5 rounded border border-gray-300 outline-none transition-all placeholder-gray-300 mb-6 text-lg"/>
+        <button onclick="buscar()"
+                class="text-white font-semibold py-2.5 px-10 rounded shadow-sm transition-colors text-base"
+                style="background-color:#2d5a52;"
+                onmouseover="this.style.backgroundColor='#234741'"
+                onmouseout="this.style.backgroundColor='#2d5a52'">
+          Buscar
+        </button>
+      </div>
+      <div id="loading" class="mt-6 text-gray-500 text-sm flex items-center gap-2">
+        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+        </svg>
+        Buscando...
+      </div>
+      <div id="error-msg" class="mt-6 p-4 bg-red-50 border border-red-200 rounded text-red-700 text-sm"></div>
+    </div>
+  </section>
+
+  <!-- Resultados — SIEMPRE VISIBLES -->
+  <section class="px-2">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-0 text-base">
+
+      <div class="data-grid-item flex items-center justify-between py-3">
+        <span class="font-bold text-gray-900">Expediente</span>
+        <span class="result-value text-right" id="res-expediente">—</span>
+      </div>
+      <div class="data-grid-item flex items-center justify-between py-3">
+        <span class="font-bold text-gray-900">Constancia</span>
+        <span class="result-value text-right" id="res-constancia">—</span>
+      </div>
+
+      <div class="data-grid-item flex items-center justify-between py-3">
+        <span class="font-bold text-gray-900">Apellidos y Nombres</span>
+        <span class="result-value text-right" id="res-nombres">—</span>
+      </div>
+      <div class="data-grid-item flex items-center justify-between py-3">
+        <span class="font-bold text-gray-900">DNI</span>
+        <span class="result-value text-right" id="res-dni">—</span>
+      </div>
+
+      <div class="data-grid-item flex items-center justify-between py-3">
+        <span class="font-bold text-gray-900">Pueblo</span>
+        <span class="result-value text-right" id="res-pueblo">—</span>
+      </div>
+      <div class="data-grid-item flex items-center justify-between py-3">
+        <span class="font-bold text-gray-900">MZ</span>
+        <span class="result-value text-right" id="res-mz">—</span>
+      </div>
+
+      <div class="data-grid-item flex items-center justify-between py-3">
+        <span class="font-bold text-gray-900">Lote</span>
+        <span class="result-value text-right" id="res-lote">—</span>
+      </div>
+      <div class="data-grid-item flex items-center justify-between py-3">
+        <span class="font-bold text-gray-900">Plano</span>
+        <span class="result-value text-right" id="res-plano">—</span>
+      </div>
+
+      <div class="data-grid-item flex items-center justify-between py-3">
+        <span class="font-bold text-gray-900">Resolución</span>
+        <span class="result-value text-right" id="res-resolucion">—</span>
+      </div>
+      <div class="hidden md:block"></div>
+
+    </div>
+  </section>
+
+</main>
+
+<script>
+  const SHEET_ID = '13aJvK072foeL5yfbOzblUcKrBBPO0fn_9mZerTmWmpA';
+  const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
+
+  document.getElementById('constancia_num').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') buscar();
+  });
+
+  function limpiarCampos() {
+    ['res-expediente','res-constancia','res-nombres','res-dni',
+     'res-pueblo','res-mz','res-lote','res-plano','res-resolucion']
+      .forEach(id => document.getElementById(id).textContent = '—');
+  }
+
+  async function buscar() {
+    const input = document.getElementById('constancia_num').value.trim();
+    if (!input) { mostrarError('Por favor ingrese un número de constancia.'); return; }
+
+    ocultarError();
+    limpiarCampos();
+    mostrarLoading(true);
+
+    try {
+      const resp = await fetch(CSV_URL);
+      if (!resp.ok) throw new Error('No se pudo acceder a la base de datos.');
+      const text = await resp.text();
+      const filas = parsearCSV(text);
+      if (filas.length < 2) throw new Error('La base de datos está vacía.');
+
+      const resultado = filas.slice(1).find(fila =>
+        (fila[0] || '').toString().trim() === input
+      );
+
+      mostrarLoading(false);
+
+      if (!resultado) {
+        mostrarError(`No se encontró ninguna constancia con el número: ${input}`);
+        return;
+      }
+
+      // A=0 n°Constancia, B=1 Expediente, C=2 Apellidos, D=3 Pueblo, E=4 Lote, F=5 Resolución, G=6 Constancia, H=7 DNI, I=8 MZ, J=9 Plano
+      document.getElementById('res-expediente').textContent  = resultado[1] || '—';
+      document.getElementById('res-constancia').textContent  = resultado[6] || '—';
+      document.getElementById('res-nombres').textContent     = resultado[2] || '—';
+      document.getElementById('res-dni').textContent         = resultado[7] || '—';
+      document.getElementById('res-pueblo').textContent      = resultado[3] || '—';
+      document.getElementById('res-mz').textContent          = resultado[8] || '—';
+      document.getElementById('res-lote').textContent        = resultado[4] || '—';
+      document.getElementById('res-plano').textContent       = resultado[9] || '—';
+      document.getElementById('res-resolucion').textContent  = resultado[5] || '—';
+
+    } catch (err) {
+      mostrarLoading(false);
+      mostrarError('Error al conectar con la base de datos. Verifica que el Google Sheets sea público.');
+      console.error(err);
+    }
+  }
+
+  function parsearCSV(text) {
+    const filas = [];
+    for (const linea of text.split('\n')) {
+      if (!linea.trim()) continue;
+      const celdas = [];
+      let dentro = false, celda = '';
+      for (let i = 0; i < linea.length; i++) {
+        const c = linea[i];
+        if (c === '"') { dentro = !dentro; }
+        else if (c === ',' && !dentro) { celdas.push(celda.trim()); celda = ''; }
+        else { celda += c; }
+      }
+      celdas.push(celda.trim());
+      filas.push(celdas);
+    }
+    return filas;
+  }
+
+  function mostrarLoading(v) { document.getElementById('loading').style.display = v ? 'flex' : 'none'; }
+  function mostrarError(msg) { const el = document.getElementById('error-msg'); el.textContent = msg; el.style.display = 'block'; }
+  function ocultarError() { document.getElementById('error-msg').style.display = 'none'; }
+</script>
+</body>
+</html>
